@@ -8,4 +8,4 @@ setup-ios:
 	cd ios && pod install
 
 setup-backend:
-	cd backend && pip install -r requirements.txt
+	cd backend && uv sync
