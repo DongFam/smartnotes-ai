@@ -1,5 +1,7 @@
-from typing import Union
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import settings
+
 import sentry_sdk
 
 sentry_sdk.init(
@@ -9,7 +11,21 @@ sentry_sdk.init(
     send_default_pii=True,
 )
 
-app = FastAPI()
+app = FastAPI(
+    title="SmartNotes AI API",
+    description="Realtime Note Editor with AI",
+    version="0.1.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():
@@ -19,6 +35,6 @@ def read_root():
 async def trigger_error():
     division_by_zero = 1 / 0
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
